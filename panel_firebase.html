@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Klinik Dr Prevents | Panel Finder</title>
+
+<style>
+:root {
+  --red: #aa202c;
+  --bg: #f4f6f9;
+  --surface: #ffffff;
+  --text: #17212f;
+  --muted: #64748b;
+  --border: #e0e4e9;
+  --input: #ffffff;
+  --soft: #e9edf2;
+  --branch-bg: #eff6ff;
+  --branch-text: #1d4ed8;
+}
+
+body.dark {
+  --bg: #111827;
+  --surface: #1f2937;
+  --text: #f1f5f9;
+  --muted: #a5b4c6;
+  --border: #374151;
+  --input: #273449;
+  --soft: #374151;
+  --branch-bg: #263c59;
+  --branch-text: #93c5fd;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Arial, sans-serif;
+  transition: background .2s, color .2s;
+}
+
+header {
+  background: var(--red);
+  color: white;
+  padding: 20px 5%;
+}
+
+.header-inner {
+  max-width: 1200px;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+header h1 {
+  margin: 0 0 5px;
+  font-size: 25px;
+}
+
+header p { margin: 0; font-size: 13px; }
+
+main {
+  max-width: 1200px;
+  margin: auto;
+  padding: 25px 16px;
+}
+
+button, input, select, textarea {
+  font: inherit;
+}
+
+button {
+  border: none;
+  border-radius: 7px;
+  padding: 11px 15px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.primary { background: var(--red); color: white; }
+.secondary { background: var(--soft); color: var(--text); }
+.danger { background: #fee2e2; color: #991b1b; }
+
+.theme-btn {
+  background: #ffffff25;
+  color: white;
+  border: 1px solid #ffffff55;
+}
+
+.toolbar, .actions, .filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.toolbar {
+  align-items: center;
+  justify-content: space-between;
+}
+
+h2 { margin: 0; }
+
+.filters { margin: 20px 0; }
+
+input, select, textarea {
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--input);
+  color: var(--text);
+}
+
+.filters input {
+  flex: 2;
+  min-width: 210px;
+}
+
+.filters select {
+  flex: 1;
+  min-width: 150px;
+}
+
+.stats {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.stat {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 16px;
+  flex: 1;
+  min-width: 130px;
+}
+
+.stat strong {
+  display: block;
+  font-size: 25px;
+}
+
+.stat span {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill,minmax(280px,1fr));
+  gap: 14px;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px;
+}
+
+.card h3 {
+  margin: 0 0 12px;
+  font-size: 18px;
+  overflow-wrap: anywhere;
+}
+
+.card p {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.badge {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 5px;
+  background: var(--soft);
+  color: var(--text);
+  font-size: 12px;
+  margin: 3px 3px 3px 0;
+}
+
+.active {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.inactive {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.branch {
+  background: var(--branch-bg);
+  color: var(--branch-text);
+  font-weight: bold;
+}
+
+.overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: #0009;
+  z-index: 10;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.modal {
+  background: var(--surface);
+  border-radius: 12px;
+  max-width: 650px;
+  padding: 24px;
+  margin: 25px auto;
+}
+
+.modal h2 { margin-bottom: 20px; }
+
+.field { margin-bottom: 15px; }
+
+.field label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 7px;
+}
+
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+}
+
+.branch-grid {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 10px;
+}
+
+.branch-grid label {
+  display: flex;
+  gap: 7px;
+  align-items: center;
+  font-size: 13px;
+  font-weight: normal;
+}
+
+.branch-grid input { width: auto; }
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.manage-list {
+  max-height: 430px;
+  overflow-y: auto;
+}
+
+.manage-row {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.manage-row strong {
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+.manage-row .actions { flex-shrink: 0; }
+
+.manage-row button {
+  padding: 8px 10px;
+  font-size: 12px;
+}
+
+.empty {
+  color: var(--muted);
+  padding: 35px;
+  text-align: center;
+}
+
+footer {
+  text-align: center;
+  color: var(--muted);
+  font-size: 12px;
+  padding: 25px;
+}
+
+@media(max-width:500px) {
+  .branch-grid { grid-template-columns: 1fr; }
+  header h1 { font-size: 20px; }
+  .manage-row { align-items: flex-start; }
+}
+</style>
+<script type="module">import {startSync} from "https://yuga146.github.io/dr-prevents-master-portal/firebase.js";startSync('drprevents_panel_finder_v2');</script>
+</head>
+
+<body>
+
+<header>
+  <div class="header-inner">
+    <div>
+      <h1>KLINIK DR PREVENTS</h1>
+      <p>Internal Panel Finder | CCR & Reception</p>
+    </div>
+    <button class="theme-btn" id="themeBtn" onclick="toggleTheme()">
+      Dark Mode
+    </button>
+  </div>
+</header>
+
+<main>
+  <div class="toolbar">
+    <h2>Panel Directory</h2>
+    <div class="actions">
+      <button class="secondary" onclick="exportData()">Export Backup</button>
+      <button class="secondary" onclick="document.getElementById('importFile').click()">Import Backup</button>
+      <button class="secondary" onclick="openManage()">Manage Panels</button>
+      <button class="primary" onclick="openForm()">+ Add New Panel</button>
+      <input id="importFile" type="file" accept=".json" hidden onchange="importData(event)">
+    </div>
+  </div>
+
+  <div class="filters">
+    <input id="search" placeholder="Search company or panel name..." oninput="render()">
+
+    <select id="typeFilter" onchange="render()">
+      <option value="">All Panel Types</option>
+      <option value="TPA">Insurance / TPA</option>
+      <option value="Corporate">Corporate Panel</option>
+    </select>
+
+    <select id="branchFilter" onchange="render()">
+      <option value="">All Branches</option>
+    </select>
+
+    <select id="statusFilter" onchange="render()">
+      <option value="">All Statuses</option>
+      <option value="Active">Active</option>
+      <option value="Inactive">Inactive</option>
+    </select>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><strong id="totalCount">0</strong><span>Total Panels</span></div>
+    <div class="stat"><strong id="tpaCount">0</strong><span>Insurance / TPA</span></div>
+    <div class="stat"><strong id="corporateCount">0</strong><span>Corporate Panels</span></div>
+    <div class="stat"><strong id="resultCount">0</strong><span>Search Results</span></div>
+  </div>
+
+  <div id="results" class="cards"></div>
+</main>
+
+<div id="formOverlay" class="overlay">
+  <div class="modal">
+    <h2 id="formTitle">Add New Panel</h2>
+
+    <form id="panelForm">
+      <input type="hidden" id="editId">
+
+      <div class="field">
+        <label>Panel / Company Name</label>
+        <input id="panelName" required placeholder="Enter panel name">
+      </div>
+
+      <div class="field">
+        <label>Panel Type</label>
+        <select id="panelType">
+          <option value="TPA">Insurance / TPA</option>
+          <option value="Corporate">Corporate Panel</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Status</label>
+        <select id="panelStatus">
+          <option value="Active">Active</option>
+          <option value="Inactive">Inactive</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Accepted Branches</label>
+        <div id="branchChecks" class="branch-grid"></div>
+      </div>
+
+      <div class="field">
+        <label>Special Instructions / Remarks</label>
+        <textarea id="panelNotes" rows="3" placeholder="Optional instructions"></textarea>
+      </div>
+
+      <div class="modal-actions">
+        <button type="submit" class="primary">Save Panel</button>
+        <button type="button" class="secondary" onclick="closeForm()">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div id="manageOverlay" class="overlay">
+  <div class="modal">
+    <h2>Manage Panels</h2>
+    <div class="field">
+      <input id="manageSearch" placeholder="Search panels to manage..." oninput="renderManage()">
+    </div>
+    <div id="manageList" class="manage-list"></div>
+    <div class="modal-actions">
+      <button class="secondary" onclick="closeManage()">Close</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  Klinik Dr Prevents | Internal Staff Reference Only
+</footer>
+
+<script>
+// OFFICIAL BRANCH CODES
+const BRANCHES = {
+  SD: "Sri Damansara",
+  KP: "Kepong",
+  ST: "Segambut",
+  JI: "Jalan Ipoh",
+  DJ: "Damansara Jaya",
+  SS15: "SS15",
+  PJOT: "PJ Old Town",
+  BPP: "Bandar Puteri Puchong",
+  KK: "Kota Kemuning",
+  TPN: "Taipan"
+};
+
+const FIVE = ["SD","KP","ST","JI","DJ"];
+const SEVEN = [...FIVE,"SS15","PJOT"];
+const TEN = [...SEVEN,"BPP","KK","TPN"];
+
+const initialData = [];
+
+function add(name,type,branches,notes="") {
+  initialData.push({
+    id: initialData.length + 1,
+    name,
+    type,
+    branches,
+    status:"Active",
+    notes
+  });
+}
+
+// INSURANCE / TPA PANELS
+add("AIA","TPA",["KP","SD","ST","JI","DJ","SS15","TPN"]);
+add("MICARE","TPA",["KP","SD","ST","JI","DJ","PJOT","BPP"]);
+add("MediExpress | Health Connect","TPA",TEN);
+add("PM Care","TPA",TEN);
+add("Red Alert","TPA",["KP","SD","ST","JI","DJ","SS15","PJOT","BPP","KK"],
+  "Taipan has a special symbol in the source; acceptance requires verification.");
+add("Health Metrics","TPA",TEN);
+add("Payment: International Medicare","TPA",["SS15","PJOT","BPP","KK"]);
+add("Mednefits","TPA",TEN);
+add("MEDILINK","TPA",["KP","SD","SS15","BPP"]);
+add("MEDKAD","TPA",["KP","SD","ST","SS15","PJOT","BPP","KK"]);
+add("MADANI (PROTECT HEALTH)","TPA",["KP","ST"]);
+add("SEHATI","TPA",["SD","ST"]);
+add("CompuMed","TPA",TEN);
+add("E-MAS","TPA",["KP","SD","ST","JI","DJ","SS15","PJOT","BPP","KK"],
+  "Taipan has a special symbol in the source; acceptance requires verification.");
+add("FOMEMA","TPA",["KP","ST","JI","DJ","SS15"]);
+add("MIYACARE","TPA",["KP","SD","ST"]);
+add("WECARE","TPA",["KP","SD","ST","SS15","PJOT","BPP","KK","TPN"]);
+add("SELCARE MANAGEMENT (PEDULI SIHAT)","TPA",["KP","SD","ST","SS15"]);
+add("ILTIZAM SELANGOR SIHAT","TPA",["KP","SD","ST"]);
+add("IA INTERNATIONAL ASSISTANCE","TPA",TEN);
+add("HEALTH4TRAVEL","TPA",FIVE);
+add("TNB","TPA",["KP","SD","ST","JI","DJ","SS15","PJOT","BPP"]);
+add("ANGSANA HEALTH x MIYACARE","TPA",["KP","SD","ST"]);
+add("PEKA B40","TPA",["KP","ST"]);
+
+// CORPORATE PANELS
+add("NIITSU","Corporate",SEVEN);
+add("Amanah Ikhtiar Malaysia","Corporate",["SD"]);
+add("KKAIMB","Corporate",["SD"]);
+add("Jari Synergy Enterprise (SHELL)","Corporate",["SD"]);
+add("Dynamic Way Sdn Bhd","Corporate",["SD"]);
+add("Idea House","Corporate",["SD","KP","ST","JI"]);
+add("UNITY SALES","Corporate",["SD"]);
+add("TGA AIRCOND","Corporate",["SD","KP","JI","ST"]);
+add("EXTRA NATURAL","Corporate",["SD","KP","JI","ST"]);
+add("ROGER YUE","Corporate",["DJ"]);
+add("UNIQUE SEAFOOD","Corporate",["DJ"]);
+add("PONTESA CARE","Corporate",["DJ"]);
+add("INFOCONNECT","Corporate",FIVE,"Group heading for InfoConnect companies.");
+add("InfoConnect Sdn Bhd","Corporate",FIVE);
+add("Docuflo (MSC) Sdn Bhd","Corporate",FIVE);
+add("BPI Technologies Sdn Bhd","Corporate",FIVE);
+add("Firstbase Sdn Bhd","Corporate",FIVE);
+add("LAKSAMANA USAHA NOODLES","Corporate",FIVE);
+add("ZENITH SALES AND SERVICES SDN BHD","Corporate",FIVE);
+add("NAGA DDB SDN BHD","Corporate",FIVE);
+add("Ampersand Advisory Sdn Bhd","Corporate",FIVE);
+add("Ampersand Sports Sdn Bhd","Corporate",FIVE);
+add("Chariot Agency Sdn Bhd","Corporate",FIVE);
+add("Cilisos Media Sdn Bhd","Corporate",FIVE);
+add("Dragonfly Designworks Sdn Bhd","Corporate",FIVE);
+add("Talon Creative Sdn Bhd","Corporate",FIVE);
+add("MAA ANIMAL CARE","Corporate",FIVE);
+add("SHIN ZUSHI (KEPONG) SDN. BHD.","Corporate",["KP"]);
+add("TEMPER & SENSE SDN BHD","Corporate",FIVE);
+add("WAKOMAS CHEMICAL SDN BHD","Corporate",[...SEVEN,"BPP","KK"]);
+add("Itamac (M) Sdn. Bhd.","Corporate",FIVE);
+add("Shun Yi Sdn. Bhd.","Corporate",SEVEN);
+add("Aesthetic Leader Sdn. Bhd.","Corporate",SEVEN);
+add("Infinitium Holdings Sdn Bhd","Corporate",["DJ","SS15"]);
+add("Handal Indah Sdn Bhd","Corporate",SEVEN);
+add("D.F. PRINTER & SUPPLIES SDN. BHD.","Corporate",["KP","SD"]);
+add("Wawasan Bintang Sdn. Bhd.","Corporate",[...SEVEN,"BPP"]);
+add("Jaz & Ro Music Malaysia Sdn. Bhd.","Corporate",["SS15"]);
+add("Narashi Services Sdn. Bhd.","Corporate",["SD","BPP"]);
+
+// LOCAL STORAGE
+const STORAGE_KEY = "drprevents_panel_finder_v2";
+const THEME_KEY = "drprevents_panel_theme";
+let panels;
+
+try {
+  const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+  panels = Array.isArray(saved) ? saved : structuredClone(initialData);
+} catch {
+  panels = structuredClone(initialData);
+}
+
+// MERGE NEW DEFAULT PANELS WITHOUT REMOVING STAFF-ADDED PANELS
+initialData.forEach(item => {
+  const exists = panels.some(p =>
+    p.name.toLowerCase().trim() === item.name.toLowerCase().trim()
+    && p.type === item.type
+  );
+
+  if (!exists) {
+    panels.push({
+      ...structuredClone(item),
+      id: Math.max(0,...panels.map(p => Number(p.id) || 0)) + 1
+    });
+  }
+});
+
+function save() {
+  try {
+    localStorage.setItem(STORAGE_KEY,JSON.stringify(panels));
+  } catch {
+    alert("Unable to save locally. Please export a backup.");
+  }
+}
+
+function escapeHTML(value) {
+  return String(value ?? "").replace(/[&<>"']/g,c => ({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#39;"
+  }[c]));
+}
+
+// THEME TOGGLE
+function applyTheme(theme) {
+  document.body.classList.toggle("dark",theme === "dark");
+  document.getElementById("themeBtn").textContent =
+    theme === "dark" ? "Light Mode" : "Dark Mode";
+  localStorage.setItem(THEME_KEY,theme);
+}
+
+function toggleTheme() {
+  applyTheme(document.body.classList.contains("dark") ? "light" : "dark");
+}
+
+// BRANCH SELECTORS
+function setupBranches() {
+  const filter = document.getElementById("branchFilter");
+  const checks = document.getElementById("branchChecks");
+
+  Object.entries(BRANCHES).forEach(([code,name]) => {
+    const option = document.createElement("option");
+    option.value = code;
+    option.textContent = code + " - " + name;
+    filter.appendChild(option);
+
+    const label = document.createElement("label");
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.name = "branches";
+    checkbox.value = code;
+    label.append(checkbox,document.createTextNode(code + " - " + name));
+    checks.appendChild(label);
+  });
+}
+
+// PANEL DIRECTORY
+function render() {
+  const q = document.getElementById("search").value.toLowerCase().trim();
+  const type = document.getElementById("typeFilter").value;
+  const branch = document.getElementById("branchFilter").value;
+  const status = document.getElementById("statusFilter").value;
+
+  const filtered = panels.filter(p => {
+    const searchable = [
+      p.name,p.type,p.notes,
+      ...(p.branches || []),
+      ...(p.branches || []).map(b => BRANCHES[b] || b)
+    ].join(" ").toLowerCase();
+
+    return (!q || searchable.includes(q))
+      && (!type || p.type === type)
+      && (!branch || p.branches.includes(branch))
+      && (!status || p.status === status);
+  }).sort((a,b) => a.name.localeCompare(b.name));
+
+  document.getElementById("totalCount").textContent = panels.length;
+  document.getElementById("tpaCount").textContent =
+    panels.filter(p => p.type === "TPA").length;
+  document.getElementById("corporateCount").textContent =
+    panels.filter(p => p.type === "Corporate").length;
+  document.getElementById("resultCount").textContent = filtered.length;
+
+  const container = document.getElementById("results");
+  container.innerHTML = "";
+
+  if (!filtered.length) {
+    container.innerHTML = '<div class="empty">No matching panels found.</div>';
+    return;
+  }
+
+  filtered.forEach(p => {
+    const card = document.createElement("div");
+    card.className = "card";
+
+    const branchHTML = (p.branches || []).map(code =>
+      '<span class="badge branch" title="' +
+      escapeHTML(BRANCHES[code] || code) + '">' +
+      escapeHTML(code) + '</span>'
+    ).join("");
+
+    card.innerHTML = `
+      <h3>${escapeHTML(p.name)}</h3>
+      <span class="badge">${escapeHTML(p.type)}</span>
+      <span class="badge ${p.status === "Active" ? "active" : "inactive"}">
+        ${escapeHTML(p.status)}
+      </span>
+      <p><strong>Accepted Branches:</strong></p>
+      <div>${branchHTML || "No branches assigned"}</div>
+      ${p.notes ? `<p><strong>Remarks:</strong> ${escapeHTML(p.notes)}</p>` : ""}
+    `;
+
+    container.appendChild(card);
+  });
+}
+
+// ADD / EDIT PANEL
+function openForm(id=null) {
+  document.getElementById("panelForm").reset();
+  document.getElementById("editId").value = "";
+  document.getElementById("formTitle").textContent =
+    id === null ? "Add New Panel" : "Edit Panel";
+
+  if (id !== null) {
+    const p = panels.find(x => x.id === id);
+    if (!p) return;
+
+    document.getElementById("editId").value = p.id;
+    document.getElementById("panelName").value = p.name;
+    document.getElementById("panelType").value = p.type;
+    document.getElementById("panelStatus").value = p.status;
+    document.getElementById("panelNotes").value = p.notes || "";
+
+    document.querySelectorAll('[name="branches"]').forEach(c => {
+      c.checked = p.branches.includes(c.value);
+    });
+  }
+
+  document.getElementById("formOverlay").style.display = "block";
+}
+
+function closeForm() {
+  document.getElementById("formOverlay").style.display = "none";
+}
+
+document.getElementById("panelForm").addEventListener("submit",e => {
+  e.preventDefault();
+
+  const branches = [...document.querySelectorAll('[name="branches"]:checked')]
+    .map(c => c.value);
+
+  if (!branches.length) {
+    alert("Please select at least one branch.");
+    return;
+  }
+
+  const id = document.getElementById("editId").value;
+  const record = {
+    id: id ? Number(id) : Math.max(Date.now(),...panels.map(p => Number(p.id) || 0)) + 1,
+    name: document.getElementById("panelName").value.trim(),
+    type: document.getElementById("panelType").value,
+    status: document.getElementById("panelStatus").value,
+    branches,
+    notes: document.getElementById("panelNotes").value.trim()
+  };
+
+  if (id) {
+    const index = panels.findIndex(p => p.id === Number(id));
+    if (index !== -1) panels[index] = record;
+  } else {
+    panels.push(record);
+  }
+
+  save();
+  closeForm();
+  render();
+  renderManage();
+});
+
+function deletePanel(id) {
+  if (!confirm("Are you sure you want to delete this panel?")) return;
+  panels = panels.filter(p => p.id !== id);
+  save();
+  render();
+  renderManage();
+}
+
+// SEPARATE MANAGEMENT SCREEN
+function openManage() {
+  document.getElementById("manageOverlay").style.display = "block";
+  renderManage();
+}
+
+function closeManage() {
+  document.getElementById("manageOverlay").style.display = "none";
+}
+
+function renderManage() {
+  const q = document.getElementById("manageSearch").value.toLowerCase();
+  const list = document.getElementById("manageList");
+  list.innerHTML = "";
+
+  panels.filter(p => p.name.toLowerCase().includes(q))
+    .sort((a,b) => a.name.localeCompare(b.name))
+    .forEach(p => {
+      const row = document.createElement("div");
+      row.className = "manage-row";
+
+      const name = document.createElement("strong");
+      name.textContent = p.name;
+
+      const actions = document.createElement("div");
+      actions.className = "actions";
+
+      const edit = document.createElement("button");
+      edit.className = "secondary";
+      edit.textContent = "Edit";
+      edit.onclick = () => openForm(p.id);
+
+      const del = document.createElement("button");
+      del.className = "danger";
+      del.textContent = "Delete";
+      del.onclick = () => deletePanel(p.id);
+
+      actions.append(edit,del);
+      row.append(name,actions);
+      list.appendChild(row);
+    });
+}
+
+// BACKUP
+function exportData() {
+  const blob = new Blob(
+    [JSON.stringify(panels,null,2)],
+    {type:"application/json"}
+  );
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "drprevents-panel-backup.json";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importData(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const data = JSON.parse(reader.result);
+
+      if (!Array.isArray(data) || !data.every(p =>
+        p && typeof p.id === "number" &&
+        typeof p.name === "string" &&
+        ["TPA","Corporate"].includes(p.type) &&
+        ["Active","Inactive"].includes(p.status) &&
+        Array.isArray(p.branches) &&
+        p.branches.every(b => BRANCHES[b])
+      )) {
+        throw new Error("Invalid backup");
+      }
+
+      if (confirm("Replace all current panel records with this backup?")) {
+        panels = data;
+        save();
+        render();
+        renderManage();
+        alert("Backup imported successfully.");
+      }
+    } catch {
+      alert("Invalid Panel Finder JSON backup.");
+    }
+    event.target.value = "";
+  };
+  reader.readAsText(file);
+}
+
+// START APPLICATION
+setupBranches();
+applyTheme(localStorage.getItem(THEME_KEY) || "light");
+save();
+render();
+</script>
+</body>
+                                  </html>
