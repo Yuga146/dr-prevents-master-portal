@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="en" class="dark-theme">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Klinik Prevents - Roster & Location Finder</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    /* HIGH-CONTRAST OBSIDIAN SLATE & CHARCOAL DARK THEME */
+    html.dark-theme {
+      --bg-body: #0d1117;
+      --bg-card: #161b22;
+      --bg-header: #161b22;
+      --bg-hover: #21262d;
+      --border-color: #30363d;
+      --text-main: #f0f6fc;
+      --text-muted: #8b949e;
+      --accent-primary: #58a6ff;
+      --accent-gold: #f0883e;
+      
+      --shift-day-bg: rgba(240, 136, 62, 0.18);
+      --shift-day-text: #ffd8b5;
+      --shift-night-bg: rgba(88, 166, 255, 0.18);
+      --shift-night-text: #b6e3ff;
+      --shift-sb-bg: rgba(46, 160, 67, 0.18);
+      --shift-sb-text: #aff5b4;
+    }
+
+    /* SOFT WARM CREAM LIGHT THEME */
+    html.light-theme {
+      --bg-body: #f5f0e6;
+      --bg-card: #fbf8f2;
+      --bg-header: #fbf8f2;
+      --bg-hover: #ebdcc9;
+      --border-color: #d8c8b4;
+      --text-main: #2c221e;
+      --text-muted: #736357;
+      --accent-primary: #0284c7;
+      --accent-gold: #d97706;
+      
+      --shift-day-bg: #fef08a;
+      --shift-day-text: #713f12;
+      --shift-night-bg: #bae6fd;
+      --shift-night-text: #075985;
+      --shift-sb-bg: #bbf7d0;
+      --shift-sb-text: #166534;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      padding-bottom: 40px;
+    }
+
+    header {
+      background: var(--bg-header);
+      border-bottom: 2px solid var(--border-color);
+      padding: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .brand-title {
+      color: var(--text-main);
+      font-size: 1.25rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn {
+      background: var(--bg-card);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+      padding: 0.5rem 0.85rem;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 0.82rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-brand {
+      background: var(--accent-primary);
+      color: #ffffff;
+      border: none;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 1rem auto;
+      padding: 0 0.75rem;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .search-input-wrapper {
+      position: relative;
+      width: 100%;
+      margin-bottom: 0.85rem;
+    }
+
+    .search-input-wrapper i {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      pointer-events: none;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 0.7rem 1rem 0.7rem 2.8rem; /* Keeps typed text entirely clear of the magnifying glass icon */
+      background: var(--bg-body);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      color: var(--text-main);
+      font-size: 0.9rem;
+    }
+
+    .filters-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    select, input[type="date"], input[type="text"], input[type="password"] {
+      background: var(--bg-body);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+      padding: 0.5rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+    }
+
+    .branches-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 0.85rem;
+      padding-top: 0.85rem;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .chip {
+      background: var(--bg-body);
+      border: 1px solid var(--border-color);
+      padding: 0.35rem 0.65rem;
+      border-radius: 16px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      color: var(--text-muted);
+    }
+
+    .chip.active {
+      border-color: var(--accent-primary);
+      color: var(--accent-primary);
+      background: var(--bg-hover);
+    }
+
+    .week-title {
+      color: var(--accent-primary);
+      font-size: 1.05rem;
+      font-weight: 800;
+      margin: 1.25rem 0 0.5rem 0;
+    }
+
+    .table-responsive {
+      width: 100%;
+      overflow-x: auto;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      margin-bottom: 1.25rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+    }
+
+    th, td {
+      padding: 0.65rem 0.75rem;
+      border: 1px solid var(--border-color);
+      vertical-align: top;
+    }
+
+    th {
+      background: var(--bg-hover);
+      color: var(--accent-primary);
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .date-col {
+      min-width: 100px;
+      font-weight: 700;
+      background: var(--bg-hover);
+    }
+
+    .shift-box {
+      padding: 6px 8px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      margin-bottom: 5px;
+      font-weight: 700;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .shift-day { background: var(--shift-day-bg); color: var(--shift-day-text); }
+    .shift-night { background: var(--shift-night-bg); color: var(--shift-night-text); }
+    .shift-sb { background: var(--shift-sb-bg); color: var(--shift-sb-text); }
+
+    .shift-actions {
+      display: flex;
+      gap: 4px;
+      margin-left: 6px;
+    }
+    .shift-actions button {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      font-size: 0.75rem;
+      color: inherit;
+      opacity: 0.8;
+    }
+    .shift-actions button:hover { opacity: 1; }
+
+    /* Custom Password Modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal-card {
+      background: var(--bg-card);
+      border: 2px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.5rem;
+      width: 90%;
+      max-width: 380px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    .error-msg {
+      color: #f85149;
+      font-size: 0.8rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      display: none;
+    }
+
+    .admin-box {
+      display: none;
+      background: var(--bg-card);
+      border: 2px solid var(--border-color);
+      border-radius: 10px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .admin-box.active { display: block; }
+    
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+  </style>
+<script type="module">import {startSync} from "https://yuga146.github.io/dr-prevents-master-portal/firebase.js";startSync('prevents_roster_v14');</script>
+</head>
+<body>
+
+  <header>
+    <div class="brand-title">
+      <i class="fa-solid fa-user-doctor"></i> KLINIK PREVENTS
+    </div>
+    <div class="btn-group">
+      <button class="btn" onclick="toggleTheme()">
+        <i class="fa-solid fa-circle-half-stroke"></i> Theme Toggle
+      </button>
+      <button class="btn btn-brand" id="adminToggleBtn" onclick="openAdminModal()">
+        <i class="fa-solid fa-lock"></i> Admin Access
+      </button>
+    </div>
+  </header>
+
+  <!-- Custom Password Modal with Decoy Math Puzzle -->
+  <div id="passwordModal" class="modal-overlay">
+    <div class="modal-card">
+      <div style="font-weight: 800; color: var(--accent-primary); margin-bottom: 10px;">
+        <i class="fa-solid fa-lock"></i> Admin Security Verification
+      </div>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 6px;">Solve math puzzle to unlock:</p>
+      <p id="mathPuzzleText" style="font-size: 0.95rem; font-weight: 700; color: var(--accent-gold); margin-bottom: 12px;"></p>
+      
+      <!-- Numeric PIN Input -->
+      <input type="password" id="adminPasswordInput" class="search-input" inputmode="numeric" pattern="[0-9]*" placeholder="Enter PIN / answer" style="margin-bottom: 8px;" onkeydown="if(event.key==='Enter') verifyAdminPassword()">
+      
+      <div id="modalErrorMsg" class="error-msg">Your answer is wrong. Access denied!</div>
+
+      <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 10px;">
+        <button class="btn" onclick="closeAdminModal()">Cancel</button>
+        <button class="btn btn-brand" onclick="verifyAdminPassword()">Verify</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+
+    <!-- Admin Shift Management Portal -->
+    <div id="adminPanel" class="admin-box">
+      <div style="font-weight: 800; color: var(--accent-primary); margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
+        <span><i class="fa-solid fa-user-gear"></i> Admin Shift Management Portal</span>
+        <span id="editModeIndicator" style="font-size: 0.75rem; background: var(--accent-primary); color: #fff; padding: 2px 8px; border-radius: 4px; display: none;">Editing Single Shift</span>
+      </div>
+
+      <!-- Single Shift Form -->
+      <form onsubmit="saveShift(event)">
+        <input type="hidden" id="editIndexInput" value="-1">
+        <div class="grid-2">
+          <div>
+            <label style="font-size: 0.75rem; color: var(--text-muted);">Doctor Name</label>
+            <input type="text" id="docNameInput" class="search-input" placeholder="e.g. Dr Yuga" required autocomplete="off" style="width: 100%;">
+          </div>
+          <div>
+            <label style="font-size: 0.75rem; color: var(--text-muted);">Branch</label>
+            <select id="branchInput" style="width: 100%;"></select>
+          </div>
+          <div>
+            <label style="font-size: 0.75rem; color: var(--text-muted);">Date</label>
+            <input type="date" id="dateInput" style="width: 100%;" required>
+          </div>
+          <div>
+            <label style="font-size: 0.75rem; color: var(--text-muted);">Shift Type & Emoji</label>
+            <select id="shiftTypeInput" style="width: 100%;">
+              <option value="DAY">☀️ Day Shift (8:00 AM - 8:00 PM)</option>
+              <option value="NIGHT">🌙 Night Shift (8:00 PM - 8:00 AM)</option>
+              <option value="SB">⏳ Standby (SB)</option>
+            </select>
+          </div>
+        </div>
+        <div style="display: flex; gap: 8px; margin-top: 5px;">
+          <button type="submit" id="saveShiftBtn" class="btn btn-brand">
+            <i class="fa-solid fa-plus"></i> Add / Update Doctor Shift
+          </button>
+          <button type="button" id="cancelEditBtn" class="btn" style="display: none;" onclick="cancelEditMode()">
+            Cancel Edit
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Public Search & Filters -->
+    <div id="publicControls" class="card">
+      <div class="search-input-wrapper">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" id="searchInput" class="search-input" placeholder="Type Doctor Name (e.g. Dr Yuga)" oninput="renderView()" autocomplete="off">
+      </div>
+
+      <div class="filters-row">
+        <div>
+          <span style="font-size: 0.75rem; color: var(--text-muted);">Filter Day:</span>
+          <select id="dayFilter" onchange="renderView()">
+            <option value="ALL">All Days</option>
+            <option value="Monday">Monday</option>
+            <option value="Tuesday">Tuesday</option>
+            <option value="Wednesday">Wednesday</option>
+            <option value="Thursday">Thursday</option>
+            <option value="Friday">Friday</option>
+            <option value="Saturday">Saturday</option>
+            <option value="Sunday">Sunday</option>
+          </select>
+        </div>
+
+        <div>
+          <span style="font-size: 0.75rem; color: var(--text-muted);">Select Date:</span>
+          <input type="date" id="dateFilter" onchange="renderView()">
+        </div>
+
+        <button class="btn" onclick="resetFilters()">Reset</button>
+      </div>
+
+      <div class="branches-grid" id="branchChips"></div>
+    </div>
+
+    <!-- Active Schedule Tables Container -->
+    <div id="tablesContainer"></div>
+
+    <!-- Doctor Lookup Result View -->
+    <div id="searchResultCard" class="card" style="display: none;"></div>
+
+  </div>
+
+  <script>
+    const BRANCHES = [
+      { code: "SD", name: "SRI DAMANSARA" },
+      { code: "KP", name: "KEPONG" },
+      { code: "ST", name: "SEGAMBUT" },
+      { code: "JI", name: "JALAN IPOH" },
+      { code: "DJ", name: "DAMANSARA JAYA" },
+      { code: "SS15", name: "SS15" },
+      { code: "PJOT", name: "PJ OLD TOWN" },
+      { code: "BPP", name: "BANDAR PUTERI PUCHONG" },
+      { code: "KK", name: "KOTA KEMUNING" },
+      { code: "TPN", name: "TAIPAN" }
+    ];
+
+    const FULL_ROSTER_DATA = [
+      // Week of 2 Nov to 8 Nov 2026
+      { date: "2026-11-02", day: "Monday", branch: "SD", type: "DAY", doc: "Swarna" },
+      { date: "2026-11-02", day: "Monday", branch: "SD", type: "SB", doc: "Karthik", note: "10am-10pm" },
+      { date: "2026-11-02", day: "Monday", branch: "SD", type: "NIGHT", doc: "Mohana" },
+      { date: "2026-11-02", day: "Monday", branch: "KP", type: "DAY", doc: "Hema" },
+      { date: "2026-11-02", day: "Monday", branch: "KP", type: "SB", doc: "Nendheni", note: "6pm-10pm" },
+      { date: "2026-11-02", day: "Monday", branch: "KP", type: "NIGHT", doc: "Amuthen" },
+      { date: "2026-11-02", day: "Monday", branch: "ST", type: "DAY", doc: "Navinder" },
+      { date: "2026-11-02", day: "Monday", branch: "ST", type: "SB", doc: "Yetesh" },
+      { date: "2026-11-02", day: "Monday", branch: "ST", type: "NIGHT", doc: "Sathilan" },
+      { date: "2026-11-02", day: "Monday", branch: "JI", type: "DAY", doc: "Narmatha" },
+      { date: "2026-11-02", day: "Monday", branch: "JI", type: "SB", doc: "Ganesa" },
+      { date: "2026-11-02", day: "Monday", branch: "JI", type: "NIGHT", doc: "Yoges" },
+      { date: "2026-11-02", day: "Monday", branch: "DJ", type: "DAY", doc: "Shan" },
+      { date: "2026-11-02", day: "Monday", branch: "DJ", type: "SB", doc: "Natisha", note: "1pm-10pm" },
+      { date: "2026-11-02", day: "Monday", branch: "DJ", type: "NIGHT", doc: "Privitha" },
+      { date: "2026-11-02", day: "Monday", branch: "SS15", type: "DAY", doc: "Arvind" },
+      { date: "2026-11-02", day: "Monday", branch: "SS15", type: "NIGHT", doc: "Shateish" },
+      { date: "2026-11-02", day: "Monday", branch: "PJOT", type: "DAY", doc: "Givianaa" },
+      { date: "2026-11-02", day: "Monday", branch: "PJOT", type: "SB", doc: "Ramanan" },
+      { date: "2026-11-02", day: "Monday", branch: "PJOT", type: "NIGHT", doc: "Sangeetha" },
+      { date: "2026-11-02", day: "Monday", branch: "BPP", type: "DAY", doc: "Vanessa" },
+      { date: "2026-11-02", day: "Monday", branch: "BPP", type: "NIGHT", doc: "Sandy" },
+      { date: "2026-11-02", day: "Monday", branch: "KK", type: "DAY", doc: "Gaithri" },
+      { date: "2026-11-02", day: "Monday", branch: "KK", type: "NIGHT", doc: "Kavitha R" },
+      { date: "2026-11-02", day: "Monday", branch: "TPN", type: "DAY", doc: "Hons" },
+      { date: "2026-11-02", day: "Monday", branch: "TPN", type: "NIGHT", doc: "Divia" },
+
+      { date: "2026-11-03", day: "Tuesday", branch: "SD", type: "DAY", doc: "Arvind" },
+      { date: "2026-11-03", day: "Tuesday", branch: "SD", type: "SB", doc: "Karthik" },
+      { date: "2026-11-03", day: "Tuesday", branch: "SD", type: "NIGHT", doc: "Mohana" },
+      { date: "2026-11-03", day: "Tuesday", branch: "KP", type: "DAY", doc: "Hema" },
+      { date: "2026-11-03", day: "Tuesday", branch: "KP", type: "NIGHT", doc: "Nendheni" },
+      { date: "2026-11-03", day: "Tuesday", branch: "ST", type: "DAY", doc: "Daniel" },
+      { date: "2026-11-03", day: "Tuesday", branch: "ST", type: "SB", doc: "Narmatha", note: "1pm-10pm" },
+      { date: "2026-11-03", day: "Tuesday", branch: "ST", type: "NIGHT", doc: "Amuthen" },
+      { date: "2026-11-03", day: "Tuesday", branch: "JI", type: "DAY", doc: "Ganesa" },
+      { date: "2026-11-03", day: "Tuesday", branch: "JI", type: "NIGHT", doc: "Yoges" },
+      { date: "2026-11-03", day: "Tuesday", branch: "DJ", type: "DAY", doc: "Yaasvini" },
+      { date: "2026-11-03", day: "Tuesday", branch: "DJ", type: "SB", doc: "Natisha", note: "1pm-10pm" },
+      { date: "2026-11-03", day: "Tuesday", branch: "DJ", type: "NIGHT", doc: "Yashwini" },
+      { date: "2026-11-03", day: "Tuesday", branch: "SS15", type: "DAY", doc: "Renujit" },
+      { date: "2026-11-03", day: "Tuesday", branch: "SS15", type: "NIGHT", doc: "Karpagam" },
+      { date: "2026-11-03", day: "Tuesday", branch: "PJOT", type: "DAY", doc: "Ramanan" },
+      { date: "2026-11-03", day: "Tuesday", branch: "PJOT", type: "NIGHT", doc: "Loshy" },
+      { date: "2026-11-03", day: "Tuesday", branch: "BPP", type: "DAY", doc: "Chagani" },
+      { date: "2026-11-03", day: "Tuesday", branch: "BPP", type: "NIGHT", doc: "Preeshantini" },
+      { date: "2026-11-03", day: "Tuesday", branch: "KK", type: "DAY", doc: "Hamsa" },
+      { date: "2026-11-03", day: "Tuesday", branch: "KK", type: "NIGHT", doc: "Kavitha R" },
+      { date: "2026-11-03", day: "Tuesday", branch: "TPN", type: "DAY", doc: "Aqilah" },
+      { date: "2026-11-03", day: "Tuesday", branch: "TPN", type: "NIGHT", doc: "Shateish" },
+
+      { date: "2026-11-04", day: "Wednesday", branch: "SD", type: "DAY", doc: "Swarna" },
+      { date: "2026-11-04", day: "Wednesday", branch: "SD", type: "SB", doc: "Karthik" },
+      { date: "2026-11-04", day: "Wednesday", branch: "SD", type: "NIGHT", doc: "Rajnandini" },
+      { date: "2026-11-04", day: "Wednesday", branch: "KP", type: "DAY", doc: "Khirren" },
+      { date: "2026-11-04", day: "Wednesday", branch: "KP", type: "NIGHT", doc: "Nendheni" },
+      { date: "2026-11-04", day: "Wednesday", branch: "ST", type: "DAY", doc: "Sathilan" },
+      { date: "2026-11-04", day: "Wednesday", branch: "ST", type: "SB", doc: "Yetesh" },
+      { date: "2026-11-04", day: "Wednesday", branch: "ST", type: "NIGHT", doc: "Navinder" },
+      { date: "2026-11-04", day: "Wednesday", branch: "JI", type: "DAY", doc: "Ahmad" },
+      { date: "2026-11-04", day: "Wednesday", branch: "JI", type: "NIGHT", doc: "Privitha" },
+      { date: "2026-11-04", day: "Wednesday", branch: "DJ", type: "DAY", doc: "Daniel" },
+      { date: "2026-11-04", day: "Wednesday", branch: "DJ", type: "SB", doc: "Suhaila" },
+      { date: "2026-11-04", day: "Wednesday", branch: "DJ", type: "NIGHT", doc: "Yashwini" },
+      { date: "2026-11-04", day: "Wednesday", branch: "SS15", type: "DAY", doc: "Renujit" },
+      { date: "2026-11-04", day: "Wednesday", branch: "SS15", type: "NIGHT", doc: "Karpagam" },
+      { date: "2026-11-04", day: "Wednesday", branch: "PJOT", type: "DAY", doc: "Yaasvini" },
+      { date: "2026-11-04", day: "Wednesday", branch: "PJOT", type: "SB", doc: "Ramanan" },
+      { date: "2026-11-04", day: "Wednesday", branch: "PJOT", type: "NIGHT", doc: "Rathika" },
+      { date: "2026-11-04", day: "Wednesday", branch: "BPP", type: "DAY", doc: "Shan" },
+      { date: "2026-11-04", day: "Wednesday", branch: "BPP", type: "NIGHT", doc: "Alyssa" },
+      { date: "2026-11-04", day: "Wednesday", branch: "KK", type: "DAY", doc: "Hamsa" },
+      { date: "2026-11-04", day: "Wednesday", branch: "KK", type: "NIGHT", doc: "Gaithri" },
+      { date: "2026-11-04", day: "Wednesday", branch: "TPN", type: "DAY", doc: "Chagani" },
+      { date: "2026-11-04", day: "Wednesday", branch: "TPN", type: "NIGHT", doc: "Aqilah" },
+
+      { date: "2026-11-05", day: "Thursday", branch: "SD", type: "DAY", doc: "Mohana" },
+      { date: "2026-11-05", day: "Thursday", branch: "SD", type: "SB", doc: "Narmatha", note: "1pm-10pm" },
+      { date: "2026-11-05", day: "Thursday", branch: "SD", type: "NIGHT", doc: "Rajnandini" },
+      { date: "2026-11-05", day: "Thursday", branch: "KP", type: "DAY", doc: "Loshy" },
+      { date: "2026-11-05", day: "Thursday", branch: "KP", type: "NIGHT", doc: "Khirren" },
+      { date: "2026-11-05", day: "Thursday", branch: "ST", type: "DAY", doc: "Sathilan" },
+      { date: "2026-11-05", day: "Thursday", branch: "ST", type: "NIGHT", doc: "Navinder" },
+      { date: "2026-11-05", day: "Thursday", branch: "JI", type: "DAY", doc: "Sangeetha" },
+      { date: "2026-11-05", day: "Thursday", branch: "JI", type: "NIGHT", doc: "Swarna" },
+      { date: "2026-11-05", day: "Thursday", branch: "DJ", type: "DAY", doc: "Natisha" },
+      { date: "2026-11-05", day: "Thursday", branch: "DJ", type: "NIGHT", doc: "Daniel" },
+      { date: "2026-11-05", day: "Thursday", branch: "SS15", type: "DAY", doc: "Vanessa" },
+      { date: "2026-11-05", day: "Thursday", branch: "SS15", type: "SB", doc: "Divia" },
+      { date: "2026-11-05", day: "Thursday", branch: "SS15", type: "NIGHT", doc: "Ahmad" },
+      { date: "2026-11-05", day: "Thursday", branch: "PJOT", type: "DAY", doc: "Yaasvini" },
+      { date: "2026-11-05", day: "Thursday", branch: "PJOT", type: "NIGHT", doc: "Ramanan" },
+      { date: "2026-11-05", day: "Thursday", branch: "BPP", type: "DAY", doc: "Preeshantini" },
+      { date: "2026-11-05", day: "Thursday", branch: "BPP", type: "NIGHT", doc: "Alyssa" },
+      { date: "2026-11-05", day: "Thursday", branch: "KK", type: "DAY", doc: "Kavitha R" },
+      { date: "2026-11-05", day: "Thursday", branch: "KK", type: "NIGHT", doc: "Gaithri" },
+      { date: "2026-11-05", day: "Thursday", branch: "TPN", type: "DAY", doc: "Kumar" },
+      { date: "2026-11-05", day: "Thursday", branch: "TPN", type: "NIGHT", doc: "Ganesa" },
+
+      { date: "2026-11-06", day: "Friday", branch: "SD", type: "DAY", doc: "Mohana" },
+      { date: "2026-11-06", day: "Friday", branch: "SD", type: "SB", doc: "Karthik" },
+      { date: "2026-11-06", day: "Friday", branch: "SD", type: "NIGHT", doc: "Swarna" },
+      { date: "2026-11-06", day: "Friday", branch: "KP", type: "DAY", doc: "Hema" },
+      { date: "2026-11-06", day: "Friday", branch: "KP", type: "SB", doc: "Nendheni", note: "6pm-10pm" },
+      { date: "2026-11-06", day: "Friday", branch: "KP", type: "NIGHT", doc: "Khirren" },
+      { date: "2026-11-06", day: "Friday", branch: "ST", type: "DAY", doc: "Amuthen" },
+      { date: "2026-11-06", day: "Friday", branch: "ST", type: "SB", doc: "Sathilan", note: "1pm-10pm" },
+      { date: "2026-11-06", day: "Friday", branch: "ST", type: "NIGHT", doc: "Daniel" },
+      { date: "2026-11-06", day: "Friday", branch: "JI", type: "DAY", doc: "Sangeetha" },
+      { date: "2026-11-06", day: "Friday", branch: "JI", type: "SB", doc: "Privitha", note: "1pm-10pm" },
+      { date: "2026-11-06", day: "Friday", branch: "JI", type: "NIGHT", doc: "Narmatha" },
+      { date: "2026-11-06", day: "Friday", branch: "DJ", type: "DAY", doc: "Shan" },
+      { date: "2026-11-06", day: "Friday", branch: "DJ", type: "SB", doc: "Yashwini", note: "1pm-10pm" },
+      { date: "2026-11-06", day: "Friday", branch: "DJ", type: "NIGHT", doc: "Natisha" },
+      { date: "2026-11-06", day: "Friday", branch: "SS15", type: "DAY", doc: "Arvind" },
+      { date: "2026-11-06", day: "Friday", branch: "SS15", type: "SB", doc: "Divia" },
+      { date: "2026-11-06", day: "Friday", branch: "SS15", type: "NIGHT", doc: "Ahmad" },
+      { date: "2026-11-06", day: "Friday", branch: "PJOT", type: "DAY", doc: "Shateish" },
+      { date: "2026-11-06", day: "Friday", branch: "PJOT", type: "NIGHT", doc: "Chagani" },
+      { date: "2026-11-06", day: "Friday", branch: "BPP", type: "DAY", doc: "Givianaa" },
+      { date: "2026-11-06", day: "Friday", branch: "BPP", type: "NIGHT", doc: "Preeshantini" },
+      { date: "2026-11-06", day: "Friday", branch: "KK", type: "DAY", doc: "Kavitha R" },
+      { date: "2026-11-06", day: "Friday", branch: "KK", type: "NIGHT", doc: "Hamsa" },
+      { date: "2026-11-06", day: "Friday", branch: "TPN", type: "DAY", doc: "Karpagam" },
+      { date: "2026-11-06", day: "Friday", branch: "TPN", type: "NIGHT", doc: "Yaasvini" },
+
+      { date: "2026-11-07", day: "Saturday", branch: "SD", type: "DAY", doc: "Rajnandini" },
+      { date: "2026-11-07", day: "Saturday", branch: "SD", type: "NIGHT", doc: "Suhaila" },
+      { date: "2026-11-07", day: "Saturday", branch: "KP", type: "DAY", doc: "Loshy" },
+      { date: "2026-11-07", day: "Saturday", branch: "KP", type: "NIGHT", doc: "Farihah" },
+      { date: "2026-11-07", day: "Saturday", branch: "ST", type: "DAY", doc: "Amuthen" },
+      { date: "2026-11-07", day: "Saturday", branch: "ST", type: "NIGHT", doc: "Kumar" },
+      { date: "2026-11-07", day: "Saturday", branch: "JI", type: "DAY", doc: "Sangeetha" },
+      { date: "2026-11-07", day: "Saturday", branch: "JI", type: "NIGHT", doc: "Hons" },
+      { date: "2026-11-07", day: "Saturday", branch: "DJ", type: "DAY", doc: "Privitha" },
+      { date: "2026-11-07", day: "Saturday", branch: "DJ", type: "NIGHT", doc: "Rathika" },
+      { date: "2026-11-07", day: "Saturday", branch: "SS15", type: "DAY", doc: "Arvind" },
+      { date: "2026-11-07", day: "Saturday", branch: "SS15", type: "NIGHT", doc: "Sandy" },
+      { date: "2026-11-07", day: "Saturday", branch: "PJOT", type: "DAY", doc: "Karpagam" },
+      { date: "2026-11-07", day: "Saturday", branch: "PJOT", type: "NIGHT", doc: "Givianaa" },
+      { date: "2026-11-07", day: "Saturday", branch: "BPP", type: "DAY", doc: "Shan" },
+      { date: "2026-11-07", day: "Saturday", branch: "BPP", type: "NIGHT", doc: "Shukor" },
+      { date: "2026-11-07", day: "Saturday", branch: "KK", type: "DAY", doc: "Gaithri" },
+      { date: "2026-11-07", day: "Saturday", branch: "KK", type: "NIGHT", doc: "Vicky" },
+      { date: "2026-11-07", day: "Saturday", branch: "TPN", type: "DAY", doc: "Shateish" },
+      { date: "2026-11-07", day: "Saturday", branch: "TPN", type: "NIGHT", doc: "Narishha" },
+
+      { date: "2026-11-08", day: "Sunday", branch: "SD", type: "DAY", doc: "Alyssa" },
+      { date: "2026-11-08", day: "Sunday", branch: "SD", type: "NIGHT", doc: "Aruna" },
+      { date: "2026-11-08", day: "Sunday", branch: "KP", type: "DAY", doc: "Hema" },
+      { date: "2026-11-08", day: "Sunday", branch: "KP", type: "NIGHT", doc: "Kumar" },
+      { date: "2026-11-08", day: "Sunday", branch: "ST", type: "DAY", doc: "Navinder" },
+      { date: "2026-11-08", day: "Sunday", branch: "ST", type: "NIGHT", doc: "Yetesh" },
+      { date: "2026-11-08", day: "Sunday", branch: "JI", type: "DAY", doc: "Yoges" },
+      { date: "2026-11-08", day: "Sunday", branch: "JI", type: "NIGHT", doc: "Aqilah" },
+      { date: "2026-11-08", day: "Sunday", branch: "DJ", type: "DAY", doc: "Yashwini" },
+      { date: "2026-11-08", day: "Sunday", branch: "DJ", type: "NIGHT", doc: "Suhaila" },
+      { date: "2026-11-08", day: "Sunday", branch: "SS15", type: "DAY", doc: "Ahmad" },
+      { date: "2026-11-08", day: "Sunday", branch: "SS15", type: "NIGHT", doc: "Renujit" },
+      { date: "2026-11-08", day: "Sunday", branch: "PJOT", type: "DAY", doc: "Husna" },
+      { date: "2026-11-08", day: "Sunday", branch: "PJOT", type: "NIGHT", doc: "Indooja" },
+      { date: "2026-11-08", day: "Sunday", branch: "BPP", type: "DAY", doc: "Lee" },
+      { date: "2026-11-08", day: "Sunday", branch: "BPP", type: "NIGHT", doc: "Vanessa" },
+      { date: "2026-11-08", day: "Sunday", branch: "KK", type: "DAY", doc: "Vicky" },
+      { date: "2026-11-08", day: "Sunday", branch: "KK", type: "NIGHT", doc: "Sandy" },
+      { date: "2026-11-08", day: "Sunday", branch: "TPN", type: "DAY", doc: "Narishha" },
+      { date: "2026-11-08", day: "Sunday", branch: "TPN", type: "NIGHT", doc: "Narishha" },
+
+      // Week of 9 Nov to 15 Nov 2026
+      { date: "2026-11-09", day: "Monday", branch: "SD", type: "DAY", doc: "Alyssa" },
+      { date: "2026-11-09", day: "Monday", branch: "SD", type: "NIGHT", doc: "Aruna" },
+      { date: "2026-11-09", day: "Monday", branch: "KP", type: "DAY", doc: "Arif", note: "locum" },
+      { date: "2026-11-09", day: "Monday", branch: "KP", type: "NIGHT", doc: "Hema" },
+      { date: "2026-11-09", day: "Monday", branch: "ST", type: "DAY", doc: "Navinder" },
+      { date: "2026-11-09", day: "Monday", branch: "ST", type: "NIGHT", doc: "Yetesh" },
+      { date: "2026-11-09", day: "Monday", branch: "JI", type: "DAY", doc: "Yoges" },
+      { date: "2026-11-09", day: "Monday", branch: "JI", type: "NIGHT", doc: "Aqilah" },
+      { date: "2026-11-09", day: "Monday", branch: "DJ", type: "DAY", doc: "Yashwini" },
+      { date: "2026-11-09", day: "Monday", branch: "DJ", type: "NIGHT", doc: "Vanessa" },
+      { date: "2026-11-09", day: "Monday", branch: "SS15", type: "DAY", doc: "Ahmad" },
+      { date: "2026-11-09", day: "Monday", branch: "SS15", type: "NIGHT", doc: "Rathika" },
+      { date: "2026-11-09", day: "Monday", branch: "PJOT", type: "DAY", doc: "Hairul Izlan", note: "locum" },
+      { date: "2026-11-09", day: "Monday", branch: "PJOT", type: "NIGHT", doc: "Kumar" },
+      { date: "2026-11-09", day: "Monday", branch: "BPP", type: "DAY", doc: "Nabil", note: "locum" },
+      { date: "2026-11-09", day: "Monday", branch: "BPP", type: "NIGHT", doc: "Suhaila" },
+      { date: "2026-11-09", day: "Monday", branch: "KK", type: "DAY", doc: "Shan" },
+      { date: "2026-11-09", day: "Monday", branch: "KK", type: "NIGHT", doc: "Sandy" },
+      { date: "2026-11-09", day: "Monday", branch: "TPN", type: "DAY", doc: "Hons" },
+      { date: "2026-11-09", day: "Monday", branch: "TPN", type: "NIGHT", doc: "Hons" },
+
+      { date: "2026-11-10", day: "Tuesday", branch: "SD", type: "DAY", doc: "Swarna" },
+      { date: "2026-11-10", day: "Tuesday", branch: "SD", type: "SB", doc: "Karthik", note: "10am-10pm" },
+      { date: "2026-11-10", day: "Tuesday", branch: "SD", type: "NIGHT", doc: "Mohana" },
+      { date: "2026-11-10", day: "Tuesday", branch: "KP", type: "DAY", doc: "Khirren" },
+      { date: "2026-11-10", day: "Tuesday", branch: "KP", type: "NIGHT", doc: "Nendheni" },
+      { date: "2026-11-10", day: "Tuesday", branch: "ST", type: "DAY", doc: "Daniel" },
+      { date: "2026-11-10", day: "Tuesday", branch: "ST", type: "SB", doc: "Narmatha", note: "10am-10pm" },
+      { date: "2026-11-10", day: "Tuesday", branch: "ST", type: "NIGHT", doc: "Sathilan" },
+      { date: "2026-11-10", day: "Tuesday", branch: "JI", type: "DAY", doc: "Ganesa" },
+      { date: "2026-11-10", day: "Tuesday", branch: "JI", type: "NIGHT", doc: "Privitha" },
+      { date: "2026-11-10", day: "Tuesday", branch: "DJ", type: "DAY", doc: "Natisha" },
+      { date: "2026-11-10", day: "Tuesday", branch: "DJ", type: "NIGHT", doc: "Loshy" },
+      { date: "2026-11-10", day: "Tuesday", branch: "SS15", type: "DAY", doc: "Ahmad" },
+      { date: "2026-11-10", day: "Tuesday", branch: "SS15", type: "NIGHT", doc: "Divia" },
+      { date: "2026-11-10", day: "Tuesday", branch: "PJOT", type: "DAY", doc: "Chagani" },
+      { date: "2026-11-10", day: "Tuesday", branch: "PJOT", type: "SB", doc: "Ramanan" },
+      { date: "2026-11-10", day: "Tuesday", branch: "PJOT", type: "NIGHT", doc: "Karpagam" },
+      { date: "2026-11-10", day: "Tuesday", branch: "BPP", type: "DAY", doc: "Preeshantini" },
+      { date: "2026-11-10", day: "Tuesday", branch: "BPP", type: "NIGHT", doc: "Arvind" },
+      { date: "2026-11-10", day: "Tuesday", branch: "KK", type: "DAY", doc: "Kavitha R" },
+      { date: "2026-11-10", day: "Tuesday", branch: "KK", type: "NIGHT", doc: "Gaithri" },
+      { date: "2026-11-10", day: "Tuesday", branch: "TPN", type: "DAY", doc: "Yaasvini" },
+      { date: "2026-11-10", day: "Tuesday", branch: "TPN", type: "NIGHT", doc: "Shateish" },
+
+      { date: "2026-11-11", day: "Wednesday", branch: "SD", type: "DAY", doc: "Swarna" },
+      { date: "2026-11-11", day: "Wednesday", branch: "SD", type: "SB", doc: "Karthik", note: "1pm-10pm" },
+      { date: "2026-11-11", day: "Wednesday", branch: "SD", type: "NIGHT", doc: "Mohana" },
+      { date: "2026-11-11", day: "Wednesday", branch: "KP", type: "DAY", doc: "Hamsa" },
+      { date: "2026-11-11", day: "Wednesday", branch: "KP", type: "NIGHT", doc: "Loshy" },
+      { date: "2026-11-11", day: "Wednesday", branch: "ST", type: "DAY", doc: "Amuthen" },
+      { date: "2026-11-11", day: "Wednesday", branch: "ST", type: "SB", doc: "Yetesh" },
+      { date: "2026-11-11", day: "Wednesday", branch: "ST", type: "NIGHT", doc: "Sathilan" },
+      { date: "2026-11-11", day: "Wednesday", branch: "JI", type: "DAY", doc: "Sangeetha" },
+      { date: "2026-11-11", day: "Wednesday", branch: "JI", type: "NIGHT", doc: "Privitha" },
+      { date: "2026-11-11", day: "Wednesday", branch: "DJ", type: "DAY", doc: "Natisha" },
+      { date: "2026-11-11", day: "Wednesday", branch: "DJ", type: "NIGHT", doc: "Rajnandini" },
+      { date: "2026-11-11", day: "Wednesday", branch: "SS15", type: "DAY", doc: "Renujit" },
+      { date: "2026-11-11", day: "Wednesday", branch: "SS15", type: "NIGHT", doc: "Karpagam" },
+      { date: "2026-11-11", day: "Wednesday", branch: "PJOT", type: "DAY", doc: "Yaasvini" },
+      { date: "2026-11-11", day: "Wednesday", branch: "PJOT", type: "NIGHT", doc: "Chagani" },
+      { date: "2026-11-11", day: "Wednesday", branch: "BPP", type: "DAY", doc: "Shan" },
+      { date: "2026-11-11", day: "Wednesday", branch: "BPP", type: "NIGHT", doc: "Alyssa" },
+      { date: "2026-11-11", day: "Wednesday", branch: "KK", type: "DAY", doc: "Kavitha R" },
+      { date: "2026-11-11", day: "Wednesday", branch: "KK", type: "NIGHT", doc: "Gaithri" },
+      { date: "2026-11-11", day: "Wednesday", branch: "TPN", type: "DAY", doc: "Ganesa" },
+      { date: "2026-11-11", day: "Wednesday", branch: "TPN", type: "NIGHT", doc: "Shateish" },
+
+      { date: "2026-11-12", day: "Thursday", branch: "SD", type: "DAY", doc: "Yashwini" },
+      { date: "2026-11-12", day: "Thursday", branch: "SD", type: "SB", doc: "Aruna" },
+      { date: "2026-11-12", day: "Thursday", branch: "SD", type: "NIGHT", doc: "Swarna" },
+      { date: "2026-11-12", day: "Thursday", branch: "KP", type: "DAY", doc: "Preeshantini" },
+      { date: "2026-11-12", day: "Thursday", branch: "KP", type: "SB", doc: "Nendheni" },
+      { date: "2026-11-12", day: "Thursday", branch: "KP", type: "NIGHT", doc: "Khirren" },
+      { date: "2026-11-12", day: "Thursday", branch: "ST", type: "DAY", doc: "Sangeetha" },
+      { date: "2026-11-12", day: "Thursday", branch: "ST", type: "NIGHT", doc: "Amuthen" },
+      { date: "2026-11-12", day: "Thursday", branch: "JI", type: "DAY", doc: "Narmatha" },
+      { date: "2026-11-12", day: "Thursday", branch: "JI", type: "NIGHT", doc: "Yoges" },
+      { date: "2026-11-12", day: "Thursday", branch: "DJ", type: "DAY", doc: "Vanessa" },
+      { date: "2026-11-12", day: "Thursday", branch: "DJ", type: "NIGHT", doc: "Natisha" },
+      { date: "2026-11-12", day: "Thursday", branch: "SS15", type: "DAY", doc: "Renujit" },
+      { date: "2026-11-12", day: "Thursday", branch: "SS15", type: "NIGHT", doc: "Kumar" },
+      { date: "2026-11-12", day: "Thursday", branch: "PJOT", type: "DAY", doc: "Rathika" },
+      { date: "2026-11-12", day: "Thursday", branch: "PJOT", type: "NIGHT", doc: "Chagani" },
+      { date: "2026-11-12", day: "Thursday", branch: "BPP", type: "DAY", doc: "Alyssa" },
+      { date: "2026-11-12", day: "Thursday", branch: "BPP", type: "NIGHT", doc: "Shan" },
+      { date: "2026-11-12", day: "Thursday", branch: "KK", type: "DAY", doc: "Hamsa" },
+      { date: "2026-11-12", day: "Thursday", branch: "KK", type: "NIGHT", doc: "Kavitha R" },
+      { date: "2026-11-12", day: "Thursday", branch: "TPN", type: "DAY", doc: "Aqilah" },
+      { date: "2026-11-12", day: "Thursday", branch: "TPN", type: "NIGHT", doc: "Ramanan" },
+
+      { date: "2026-11-13", day: "Friday", branch: "SD", type: "DAY", doc: "Rajnandini" },
+      { date: "2026-11-13", day: "Friday", branch: "SD", type: "SB", doc: "Karthik", note: "1pm-10pm" },
+      { date: "2026-11-13", day: "Friday", branch: "SD", type: "NIGHT", doc: "Khirren" },
+      { date: "2026-11-13", day: "Friday", branch: "KP", type: "DAY", doc: "Hema" },
+      { date: "2026-11-13", day: "Friday", branch: "KP", type: "NIGHT", doc: "Nendheni" },
+      { date: "2026-11-13", day: "Friday", branch: "ST", type: "DAY", doc: "Sathilan" },
+      { date: "2026-11-13", day: "Friday", branch: "ST", type: "SB", doc: "Renujit" },
+      { date: "2026-11-13", day: "Friday", branch: "ST", type: "NIGHT", doc: "Yashwini" },
+      { date: "2026-11-13", day: "Friday", branch: "JI", type: "DAY", doc: "Privitha" },
+      { date: "2026-11-13", day: "Friday", branch: "JI", type: "SB", doc: "Ganesa" },
+      { date: "2026-11-13", day: "Friday", branch: "JI", type: "NIGHT", doc: "Yoges" },
+      { date: "2026-11-13", day: "Friday", branch: "DJ", type: "DAY", doc: "Vanessa" },
+      { date: "2026-11-13", day: "Friday", branch: "DJ", type: "NIGHT", doc: "Natisha" },
+      { date: "2026-11-13", day: "Friday", branch: "SS15", type: "DAY", doc: "Divia" },
+      { date: "2026-11-13", day: "Friday", branch: "SS15", type: "NIGHT", doc: "Narmatha" },
+      { date: "2026-11-13", day: "Friday", branch: "PJOT", type: "DAY", doc: "Givianaa" },
+      { date: "2026-11-13", day: "Friday", branch: "PJOT", type: "NIGHT", doc: "Ramanan" },
+      { date: "2026-11-13", day: "Friday", branch: "BPP", type: "DAY", doc: "Sandy" },
+      { date: "2026-11-13", day: "Friday", branch: "BPP", type: "NIGHT", doc: "Preeshantini" },
+      { date: "2026-11-13", day: "Friday", branch: "KK", type: "DAY", doc: "Hamsa" },
+      { date: "2026-11-13", day: "Friday", branch: "KK", type: "NIGHT", doc: "Kavitha R" },
+      { date: "2026-11-13", day: "Friday", branch: "TPN", type: "DAY", doc: "Karpagam" },
+      { date: "2026-11-13", day: "Friday", branch: "TPN", type: "NIGHT", doc: "Aqilah" },
+
+      { date: "2026-11-14", day: "Saturday", branch: "SD", type: "DAY", doc: "Mohana" },
+      { date: "2026-11-14", day: "Saturday", branch: "SD", type: "NIGHT", doc: "Rajnandini" },
+      { date: "2026-11-14", day: "Saturday", branch: "KP", type: "DAY", doc: "Loshy" },
+      { date: "2026-11-14", day: "Saturday", branch: "KP", type: "NIGHT", doc: "Hema" },
+      { date: "2026-11-14", day: "Saturday", branch: "ST", type: "DAY", doc: "Sathilan" },
+      { date: "2026-11-14", day: "Saturday", branch: "ST", type: "NIGHT", doc: "Sangeetha" },
+      { date: "2026-11-14", day: "Saturday", branch: "JI", type: "DAY", doc: "Privitha" },
+      { date: "2026-11-14", day: "Saturday", branch: "JI", type: "NIGHT", doc: "Ganesa" },
+      { date: "2026-11-14", day: "Saturday", branch: "DJ", type: "DAY", doc: "Suhaila" },
+      { date: "2026-11-14", day: "Saturday", branch: "DJ", type: "NIGHT", doc: "Daniel" },
+      { date: "2026-11-14", day: "Saturday", branch: "SS15", type: "DAY", doc: "Ahmad" },
+      { date: "2026-11-14", day: "Saturday", branch: "SS15", type: "NIGHT", doc: "Arvind" },
+      { date: "2026-11-14", day: "Saturday", branch: "PJOT", type: "DAY", doc: "Kumar" },
+      { date: "2026-11-14", day: "Saturday", branch: "PJOT", type: "NIGHT", doc: "Rathika" },
+      { date: "2026-11-14", day: "Saturday", branch: "BPP", type: "DAY", doc: "Shateish" },
+      { date: "2026-11-14", day: "Saturday", branch: "BPP", type: "NIGHT", doc: "Alyssa" },
+      { date: "2026-11-14", day: "Saturday", branch: "KK", type: "DAY", doc: "Gaithri" },
+      { date: "2026-11-14", day: "Saturday", branch: "KK", type: "NIGHT", doc: "Sandy" },
+      { date: "2026-11-14", day: "Saturday", branch: "TPN", type: "DAY", doc: "Hons" },
+      { date: "2026-11-14", day: "Saturday", branch: "TPN", type: "NIGHT", doc: "Yaasvini" },
+
+      { date: "2026-11-15", day: "Sunday", branch: "SD", type: "DAY", doc: "Mohana" },
+      { date: "2026-11-15", day: "Sunday", branch: "SD", type: "SB", doc: "Karthik", note: "10am-10pm" },
+      { date: "2026-11-15", day: "Sunday", branch: "SD", type: "NIGHT", doc: "Rajnandini" },
+      { date: "2026-11-15", day: "Sunday", branch: "KP", type: "DAY", doc: "Khirren" },
+      { date: "2026-11-15", day: "Sunday", branch: "KP", type: "SB", doc: "Loshy", note: "1pm-10pm" },
+      { date: "2026-11-15", day: "Sunday", branch: "KP", type: "NIGHT", doc: "Arvind" },
+      { date: "2026-11-15", day: "Sunday", branch: "ST", type: "DAY", doc: "Sathilan" },
+      { date: "2026-11-15", day: "Sunday", branch: "ST", type: "NIGHT", doc: "Sangeetha" },
+      { date: "2026-11-15", day: "Sunday", branch: "JI", type: "DAY", doc: "Privitha" },
+      { date: "2026-11-15", day: "Sunday", branch: "JI", type: "SB", doc: "Givianaa", note: "10am-10pm" },
+      { date: "2026-11-15", day: "Sunday", branch: "JI", type: "NIGHT", doc: "Narmatha" },
+      { date: "2026-11-15", day: "Sunday", branch: "DJ", type: "DAY", doc: "Suhaila" },
+      { date: "2026-11-15", day: "Sunday", branch: "DJ", type: "NIGHT", doc: "Daniel" },
+      { date: "2026-11-15", day: "Sunday", branch: "SS15", type: "DAY", doc: "Ahmad" },
+      { date: "2026-11-15", day: "Sunday", branch: "SS15", type: "NIGHT", doc: "Divia" },
+      { date: "2026-11-15", day: "Sunday", branch: "PJOT", type: "DAY", doc: "Yoges" },
+      { date: "2026-11-15", day: "Sunday", branch: "PJOT", type: "NIGHT", doc: "Yaasvini" },
+      { date: "2026-11-15", day: "Sunday", branch: "BPP", type: "DAY", doc: "Shateish" },
+      { date: "2026-11-15", day: "Sunday", branch: "BPP", type: "NIGHT", doc: "Alyssa" },
+      { date: "2026-11-15", day: "Sunday", branch: "KK", type: "DAY", doc: "Gaithri" },
+      { date: "2026-11-15", day: "Sunday", branch: "KK", type: "NIGHT", doc: "Hamsa" },
+      { date: "2026-11-15", day: "Sunday", branch: "TPN", type: "DAY", doc: "Preeshantini" },
+      { date: "2026-11-15", day: "Sunday", branch: "TPN", type: "NIGHT", doc: "Hons" }
+    ];
+
+    let roster = JSON.parse(localStorage.getItem('prevents_roster_v14')) || FULL_ROSTER_DATA;
+    let selectedBranch = "ALL";
+    let isAdminActive = false;
+    let currentMathAnswer = 0;
+
+    document.addEventListener("DOMContentLoaded", () => {
+      populateBranches();
+      renderChips();
+      renderView();
+    });
+
+    function toggleTheme() {
+      const html = document.documentElement;
+      if (html.classList.contains('light-theme')) {
+        html.classList.remove('light-theme');
+        html.classList.add('dark-theme');
+      } else {
+        html.classList.remove('dark-theme');
+        html.classList.add('light-theme');
+      }
+    }
+
+    function populateBranches() {
+      const sel = document.getElementById('branchInput');
+      sel.innerHTML = BRANCHES.map(b => `<option value="${b.code}">${b.code} - ${b.name}</option>`).join('');
+    }
+
+    function renderChips() {
+      const container = document.getElementById('branchChips');
+      let html = `<div class="chip ${selectedBranch === 'ALL' ? 'active' : ''}" onclick="selectBranch('ALL')">ALL BRANCHES</div>`;
+      BRANCHES.forEach(b => {
+        html += `<div class="chip ${selectedBranch === b.code ? 'active' : ''}" onclick="selectBranch('${b.code}')">${b.code} - ${b.name}</div>`;
+      });
+      container.innerHTML = html;
+    }
+
+    function selectBranch(code) {
+      selectedBranch = code;
+      renderChips();
+      renderView();
+    }
+
+    function resetFilters() {
+      document.getElementById('searchInput').value = '';
+      document.getElementById('dayFilter').value = 'ALL';
+      document.getElementById('dateFilter').value = '';
+      selectedBranch = 'ALL';
+      renderChips();
+      renderView();
+    }
+
+    function generateRandomMathPuzzle() {
+      const ops = ['+', '-', '*'];
+      const op = ops[Math.floor(Math.random() * ops.length)];
+      let n1, n2;
+
+      if (op === '+') {
+        n1 = Math.floor(Math.random() * 80) + 20;
+        n2 = Math.floor(Math.random() * 80) + 20;
+        currentMathAnswer = n1 + n2;
+      } else if (op === '-') {
+        n1 = Math.floor(Math.random() * 80) + 40;
+        n2 = Math.floor(Math.random() * 30) + 1;
+        currentMathAnswer = n1 - n2;
+      } else {
+        n1 = Math.floor(Math.random() * 12) + 3;
+        n2 = Math.floor(Math.random() * 10) + 2;
+        currentMathAnswer = n1 * n2;
+      }
+
+      document.getElementById('mathPuzzleText').innerText = `Solve: ${n1} ${op} ${n2} = ?`;
+    }
+
+    function openAdminModal() {
+      if (isAdminActive) {
+        isAdminActive = false;
+        document.getElementById('adminPanel').classList.remove('active');
+        document.getElementById('publicControls').style.display = 'block';
+        document.getElementById('adminToggleBtn').innerHTML = `<i class="fa-solid fa-lock"></i> Admin Access`;
+        cancelEditMode();
+        renderView();
+        return;
+      }
+      generateRandomMathPuzzle();
+      document.getElementById('passwordModal').classList.add('active');
+      document.getElementById('modalErrorMsg').style.display = 'none';
+      document.getElementById('adminPasswordInput').value = '';
+      document.getElementById('adminPasswordInput').focus();
+    }
+
+    function closeAdminModal() {
+      document.getElementById('passwordModal').classList.remove('active');
+    }
+
+    function verifyAdminPassword() {
+      const rawInput = document.getElementById('adminPasswordInput').value.trim();
+      
+      // Strict Decoy Security: Math answer is purely a decoy. Only "1233" or "1233halfwa" works.
+      if (rawInput === "1233" || rawInput === "1233halfwa") {
+        isAdminActive = true;
+        closeAdminModal();
+        document.getElementById('adminPanel').classList.add('active');
+        document.getElementById('publicControls').style.display = 'none';
+        document.getElementById('adminToggleBtn').innerHTML = `<i class="fa-solid fa-lock-open"></i> Exit Admin`;
+        renderView();
+      } else {
+        document.getElementById('modalErrorMsg').style.display = 'block';
+        document.getElementById('adminPasswordInput').value = '';
+        generateRandomMathPuzzle();
+      }
+    }
+
+    function saveShift(e) {
+      e.preventDefault();
+      const editIdx = parseInt(document.getElementById('editIndexInput').value);
+      const name = document.getElementById('docNameInput').value.trim();
+      const branch = document.getElementById('branchInput').value;
+      const date = document.getElementById('dateInput').value;
+      const type = document.getElementById('shiftTypeInput').value;
+
+      if (!name || !date) return;
+      const dObj = new Date(date);
+      const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      const day = days[dObj.getDay()];
+
+      if (editIdx > -1) {
+        roster[editIdx] = { date, day, branch, type, doc: name };
+      } else {
+        roster.push({ date, day, branch, type, doc: name });
+      }
+
+      localStorage.setItem('prevents_roster_v14', JSON.stringify(roster));
+      cancelEditMode();
+      renderView();
+    }
+
+    function editShift(index) {
+      const s = roster[index];
+      document.getElementById('docNameInput').value = s.doc;
+      document.getElementById('branchInput').value = s.branch;
+      document.getElementById('dateInput').value = s.date;
+      document.getElementById('shiftTypeInput').value = s.type;
+      document.getElementById('editIndexInput').value = index;
+      
+      document.getElementById('editModeIndicator').style.display = 'inline-block';
+      document.getElementById('saveShiftBtn').innerHTML = `<i class="fa-solid fa-pen"></i> Update Shift`;
+      document.getElementById('cancelEditBtn').style.display = 'inline-block';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function cancelEditMode() {
+      document.getElementById('editIndexInput').value = '-1';
+      document.getElementById('docNameInput').value = '';
+      document.getElementById('editModeIndicator').style.display = 'none';
+      document.getElementById('saveShiftBtn').innerHTML = `<i class="fa-solid fa-plus"></i> Add / Update Doctor Shift`;
+      document.getElementById('cancelEditBtn').style.display = 'none';
+    }
+
+    function deleteShift(index) {
+      if (confirm("Are you sure you want to delete this shift?")) {
+        roster.splice(index, 1);
+        localStorage.setItem('prevents_roster_v14', JSON.stringify(roster));
+        renderView();
+      }
+    }
+
+    function getWeekStart(dStr) {
+      const d = new Date(dStr);
+      const day = d.getDay();
+      const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+      return new Date(d.setDate(diff)).toISOString().split('T')[0];
+    }
+
+    function getShiftIcon(type) {
+      if (type === 'DAY') return '☀️';
+      if (type === 'NIGHT') return '🌙';
+      return '⏳';
+    }
+
+    function formatDateDDMM(dateStr) {
+      const parts = dateStr.split('-');
+      if (parts.length === 3) {
+        return `${parts[2]}/${parts[1]}`;
+      }
+      return dateStr;
+    }
+
+    function renderView() {
+      const search = document.getElementById('searchInput').value.trim().toLowerCase();
+      const daySel = document.getElementById('dayFilter').value;
+      const dateSel = document.getElementById('dateFilter').value;
+
+      const mainContainer = document.getElementById('tablesContainer');
+      const searchCard = document.getElementById('searchResultCard');
+
+      // If user is searching for a doctor name, show dedicated lookup summary view respecting branch & date filters
+      if (search !== '') {
+        mainContainer.style.display = 'none';
+        searchCard.style.display = 'block';
+        renderDoctorSearch(search, selectedBranch, dateSel);
+        return;
+      }
+
+      mainContainer.style.display = 'block';
+      searchCard.style.display = 'none';
+
+      const todayStr = new Date().toISOString().split('T')[0];
+      let dataset = roster.map((item, originalIndex) => ({ ...item, originalIndex }))
+                          .filter(item => item.date >= todayStr);
+
+      if (daySel !== 'ALL') dataset = dataset.filter(d => d.day === daySel);
+      if (dateSel !== '') dataset = dataset.filter(d => d.date === dateSel);
+
+      const visibleBranches = selectedBranch === 'ALL' ? BRANCHES : BRANCHES.filter(b => b.code === selectedBranch);
+
+      const weeksMap = {};
+      dataset.forEach(item => {
+        const wk = getWeekStart(item.date);
+        if (!weeksMap[wk]) weeksMap[wk] = [];
+        weeksMap[wk].push(item);
+      });
+
+      let html = '';
+      const sortedWeeks = Object.keys(weeksMap).sort();
+
+      if (sortedWeeks.length === 0) {
+        mainContainer.innerHTML = '<div class="card" style="text-align: center; color: var(--text-muted); padding: 2rem;">No upcoming shifts found.</div>';
+        return;
+      }
+
+      sortedWeeks.forEach((wkStart, idx) => {
+        const items = weeksMap[wkStart];
+        const dates = [...new Set(items.map(i => i.date))].sort();
+        const wkStartFormatted = formatDateDDMM(wkStart);
+
+        html += `<div class="week-title"><i class="fa-solid fa-calendar-week"></i> Week ${idx + 1} (Week of ${wkStartFormatted})</div>`;
+        html += `<div class="table-responsive"><table><thead><tr><th class="date-col">DATE / DAY</th>`;
+        visibleBranches.forEach(b => html += `<th>${b.code}</th>`);
+        html += `</tr></thead><tbody>`;
+
+        dates.forEach(dStr => {
+          const dItems = items.filter(x => x.date === dStr);
+          const dayName = dItems[0]?.day || '';
+          const displayDate = formatDateDDMM(dStr);
+
+          html += `<tr><td class="date-col">${dayName}<br><span style="font-size:0.7rem; opacity:0.8;">${displayDate}</span></td>`;
+          visibleBranches.forEach(b => {
+            const bShifts = dItems.filter(s => s.branch === b.code);
+            html += `<td>`;
+            if (bShifts.length === 0) {
+              html += `<span style="color: var(--text-muted);">-</span>`;
+            } else {
+              bShifts.forEach(s => {
+                const icon = getShiftIcon(s.type);
+                html += `<div class="shift-box shift-${s.type.toLowerCase()}">
+                  <span>${icon} ${s.doc}${s.note ? ' <small>(' + s.note + ')</small>' : ''}</span>`;
+                
+                if (isAdminActive) {
+                  html += `<div class="shift-actions">
+                    <button onclick="editShift(${s.originalIndex})" title="Edit Shift"><i class="fa-solid fa-pen"></i></button>
+                    <button onclick="deleteShift(${s.originalIndex})" title="Delete Shift"><i class="fa-solid fa-trash"></i></button>
+                  </div>`;
+                }
+                html += `</div>`;
+              });
+            }
+            html += `</td>`;
+          });
+          html += `</tr>`;
+        });
+
+        html += `</tbody></table></div>`;
+      });
+
+      mainContainer.innerHTML = html;
+    }
+
+    function renderDoctorSearch(query, branchFilter, dateFilter) {
+      const todayStr = new Date().toISOString().split('T')[0];
+      let matches = roster.filter(s => s.doc.toLowerCase().includes(query) && s.date >= todayStr);
+      
+      // Strict Branch Filtering: Only show shifts for the selected branch unless ALL is selected.
+      if (branchFilter !== "ALL") {
+        matches = matches.filter(s => s.branch === branchFilter);
+      }
+
+      // Strict Date Filtering: Only show shifts for the specific date if selected.
+      if (dateFilter !== "") {
+        matches = matches.filter(s => s.date === dateFilter);
+      }
+
+      const card = document.getElementById('searchResultCard');
+      
+      if (matches.length === 0) {
+        let criteriaText = "";
+        if (branchFilter !== "ALL") criteriaText += ` at branch ${branchFilter}`;
+        if (dateFilter !== "") criteriaText += ` on date ${formatDateDDMM(dateFilter)}`;
+        
+        card.innerHTML = `<h3>Duty & Location Finder</h3><p style="color: var(--text-muted); margin-top: 10px;">No upcoming shifts found for "${query}"${criteriaText}.</p>`;
+        return;
+      }
+
+      let criteriaTitle = "";
+      if (branchFilter !== "ALL") criteriaTitle += ` for ${branchFilter}`;
+      if (dateFilter !== "") criteriaTitle += ` on ${formatDateDDMM(dateFilter)}`;
+
+      let html = `<h3 style="color: var(--accent-primary);">Duty Schedule & Location Summary for "${matches[0].doc}"${criteriaTitle}</h3><br>`;
+      matches.forEach(m => {
+        const icon = getShiftIcon(m.type);
+        const displayDate = formatDateDDMM(m.date);
+        let timeDesc = "Day Shift (8:00 AM - 8:00 PM)";
+        if (m.type === "NIGHT") timeDesc = "Night Shift (8:00 PM - 8:00 AM)";
+        if (m.type === "SB") timeDesc = "Standby (SB)";
+
+        html += `<div style="padding: 10px 0; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+          <div>
+            <strong>${m.day} (${displayDate})</strong> <span style="font-size:0.8rem; color:var(--text-muted);">- ${timeDesc} ${m.note ? '(' + m.note + ')' : ''}</span>
+          </div>
+          <div>
+            <span class="shift-box shift-${m.type.toLowerCase()}" style="display:inline-flex; padding: 2px 8px;">${icon}</span> at <b style="color: var(--accent-primary);">${m.branch}</b>
+          </div>
+        </div>`;
+      });
+      card.innerHTML = html;
+    }
+  </script>
+</body>
+</html>
